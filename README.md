@@ -1,5 +1,5 @@
-# Programming Assignment 1
-## CS665: Secure Memory Systems, 2019-20, Semester-I
+# Programming Assignment 2
+## CS773: Computer Architecture for Performance and Security, Autumn 2022
 
 ## Directory Structure
 PA1 code base contains seven directory, Makefile and other supported files required to complete the PA1 and described as follows:
