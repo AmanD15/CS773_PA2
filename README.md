@@ -2,11 +2,11 @@
 ## CS773: Computer Architecture for Performance and Security, Autumn 2022
 
 ## Directory Structure
-PA1 code base contains seven directory, Makefile and other supported files required to complete the PA1 and described as follows:
+PA2 code base contains seven directory, Makefile and other supported files required to complete the PA2 and described as follows:
 
-**1.** The **lib** directory contains the standard functions and data structure that can be used in any task given for the PA1. This directory contains two files, namely **util.h** and **util.c**. All commonly used functions and data structures are declared in the **util.h**, and the corresponding definition is provided in the **util.c**. If you need additional functions and data structure that can be referenced in any task for PA1, utilize **util.h** and **util.c** for declaration and definition for the same.
+**1.** The **lib** directory contains the standard functions and data structure that can be used in any task given for the PA2. This directory contains two files, namely **util.h** and **util.c**. All commonly used functions and data structures are declared in the **util.h**, and the corresponding definition is provided in the **util.c**. If you need additional functions and data structure that can be referenced in any task for PA2, utilize **util.h** and **util.c** for declaration and definition for the same.
 
-**2.** The **report** directory contains a blank **README** file. Before submitting the assignment, populate it with necessary information like references used, help taken from others etc. for completing the PA1. Apart from the README file, you need to submit a **report in PDF** that you can place within the same directory..
+**2.** The **report** directory contains a blank **README** file. Before submitting the assignment, populate it with necessary information like references used, help taken from others etc. for completing the PA2. Apart from the README file, you need to submit a **report in PDF** that you can place within the same directory..
 
 **3. Task-1a, Task-1b, and Task-3a** contain the base code for **sender** and **receiver** in files **sender.c** and **receiver.c**, respectively for each task. You need to use the same files for implementing the **sender** and **receiver** functionality required to create a **FLUSH+RELOAD** based covert channel between them to share the classified information.
 
@@ -14,7 +14,7 @@ PA1 code base contains seven directory, Makefile and other supported files requi
 
 **5. Examples** directory contains two example programs. One is demonstrating the use of library function for mapping a file into memory, and the other one is to convert a string into binary and vice-versa.
 
-**5. Makefile** is used for the compilation of the PA1 code base.
+**5. Makefile** is used for the compilation of the PA2 code base.
 
 **6.** The **share_mem.txt** file is for establishing a shared memory region between two processes.  For creating a covert channel between **sender** and the **receiver**, a shared memory region needed on which we can create a **FLUSH+RELOAD** based **Cache Covert Channel** as required for the **Task-1a, Task-1b, and Task-3a**.
 
@@ -22,15 +22,15 @@ PA1 code base contains seven directory, Makefile and other supported files requi
 
 **8.** The **red_heart.jpg** file is an image file that needs to be transferred from **sender** to **receiver** over the **covert channel** for **Task-3a**.
 
-**9.** The **CS665_2019_PA1.pdf** file desribes the **Programming Assignemnt 1 (PA1)** and the task needs to be done for completing it.
+**9.** The **CS773_2022_PA2.pdf** file desribes the **Programming Assignemnt 2 (PA2)** and the task needs to be done for completing it.
 
 **10.** The **Cache_Side_Channel_on_GnuPG.pdf** file describes the procedure for getting the addresses of interest for mounting **FLUSH+RELOAD** based **Cache Side-Channel** attack on the **RSA** Algorithm implementation in **GnuPG** library (for **Task-2a**).
 
 
 ## To Build System
-Use **make** command to compile the assignment. After successful compilation, all the binaries are generated in the root directory of the PA1 code base.
+Use **make** command to compile the assignment. After successful compilation, all the binaries are generated in the root directory of the PA2 code base.
 
-**1. Compile code for all the Task:** To compile for all the task, use the **make** command from the root directory of the PA1 code base.
+**1. Compile code for all the Task:** To compile for all the task, use the **make** command from the root directory of the PA2 code base.
 > **make**
 
 **2. Compile Individual Task code:** Individual task code can be compiled using the **make** command followed by the Task number in lower case. For example, if you want to build the code base for Task-1b, the syntax is as follows:
@@ -42,7 +42,7 @@ Similarly, other tasks i.e., task-1a, task-2a and task-3a code can be compiled i
 > **make clean**
 
 ## Generated Binary Code
-After the compilation of an individual task code or entire assignment code, binary files are placed in the root directory of the PA1 code base. These files are as follows:
+After the compilation of an individual task code or entire assignment code, binary files are placed in the root directory of the PA2 code base. These files are as follows:
 
 **1. Task-1a:** Its **sender** and **receiver** binary files are represented as **t1a-sender** and **t1a-receiver**, respectively.
 
