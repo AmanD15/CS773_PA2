@@ -50,12 +50,12 @@ string_binary:	Examples/string_binary.o lib/util.o
 	$(CC) $^ -o $@
 
 
-group%-pa1.tar.gz:	clean
+group%-pa2.tar.gz:	clean
 	tar cf - `find . -type f | grep -v '^\.*$$' | grep -v '/CVS/' | grep -v '/\.svn/' | grep -v '/\.git/' | grep -v 'group[0-9].*\.tar\.gz' | grep -v '/submit.token$$'` | gzip > $@
 
 
 .PHONY: prepare-submit
-prepare-submit:	group$(group)-pa1.tar.gz
+prepare-submit:	group$(group)-pa2.tar.gz
 
 .PHONY: clean
 clean:
