@@ -10,12 +10,25 @@ int main(int argc, char **argv) {
 	msg[0] = '\0';
 	
 	// TODO: Establish your cache covert channel
+	
+	map_handle_t *handle;	 // declaring a handle for file mapping
+	char *map;
+
+	map = (char *) map_file("map_tmp.txt", &handle);  // mapping a file in memory (virtual address space)
+
+  
+	// End TODO
 
 	t_recv = clock();
 
 	// TODO: synchronize with sender and receive data in msg buffer.
-
-
+	
+	printf("%p\n",map);
+	for (int i = 0; i<10; i++){
+	clflush(&map);
+	printf("%ld\n",measure_one_block_access_time(&map));}
+	unmap_file(handle); 
+	// End TODO
 
 
 	t_recv = clock() - t_recv;

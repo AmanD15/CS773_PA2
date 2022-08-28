@@ -11,6 +11,13 @@ int main(int argc, char **argv) {
 	double trans_rate;
 
 	// TODO: Establish your cache covert channel
+	
+	map_handle_t *handle;	 // declaring a handle for file mapping
+	char *map;
+
+	map = (char *) map_file("map_tmp.txt", &handle);  // mapping a file in memory (virtual address space)
+  
+	// End TODO
 
 	printf("Enter message to be send: ");
 	fgets (msg, 50, stdin);
@@ -19,8 +26,19 @@ int main(int argc, char **argv) {
 	t_send = clock();
 
 	// TODO: Transmit message over the cache covert channel
+	char *binary;
+	binary = string_to_binary(msg);
+	unsigned int bin_len = strlen(binary);
+	for (int i = 0; i<bin_len;i++){
+		if (binary[i] == 1)
+			maccess(map);
+		printf("%c\n",binary[i]);
+	}
+	printf("%p\n",map);
 
 
+	unmap_file(handle); 
+	// End TODO
 
 
 	t_send = clock() - t_send;
