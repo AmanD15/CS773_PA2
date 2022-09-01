@@ -1,6 +1,4 @@
-// #include <time.h>
 #include "../lib/util.h"
-
 
 int main(int argc, char **argv) {
 
@@ -29,13 +27,17 @@ int main(int argc, char **argv) {
 	char *binary;
 	binary = string_to_binary(msg);
 	unsigned int bin_len = strlen(binary);
-	for (int i = 0; i<bin_len;i++){
-		if (binary[i] == 1)
-			maccess(map);
-		printf("%c\n",binary[i]);
-	}
-	printf("%p\n",map);
-
+	bool sequence[8] = {1,0,1,0,1,0,1,1};
+	for (int i = 0; i < 8; i++) {
+			send_bit(sequence[i], handle);
+		}
+	for (int ind = 0; ind < bin_len; ind++) {
+			if (binary[ind] == '0') {
+				send_bit(false, handle);
+			} else {
+				send_bit(true, handle);
+			}
+		}
 
 	unmap_file(handle); 
 	// End TODO

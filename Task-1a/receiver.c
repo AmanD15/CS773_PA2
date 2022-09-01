@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv) {
 
-	char msg[51]; //buffer to receive data
+	char msg[51*8]; //buffer to receive data
 	unsigned int msg_len = 0;
 	clock_t t_recv;
 	double recv_time;
@@ -22,11 +22,32 @@ int main(int argc, char **argv) {
 	t_recv = clock();
 
 	// TODO: synchronize with sender and receive data in msg buffer.
-	
-	printf("%p\n",map);
-	for (int i = 0; i<10; i++){
-	clflush(&map);
-	printf("%ld\n",measure_one_block_access_time(&map));}
+	uint32_t sequenceMask = ((uint32_t) 1<<6) - 1;
+	uint32_t expSequence = 0b101011;
+	uint32_t bitSequence = 0;
+	while (1)
+	{
+		bool bitReceived = detect_bit(handle);
+		bitSequence = ((uint32_t) bitSequence<<1) | bitReceived;
+		if ((bitSequence & sequenceMask) == expSequence) {
+			int strike_zeros = 0;
+			for (int i = 0; i < MAX_BUFFER_LEN; i++) {
+				if (detect_bit(handle)) {
+					msg[i] = '1';
+					strike_zeros = 0;
+				} else {
+					msg[i] = '0';
+					if (++strike_zeros >= 8 && i % 8 == 0) {
+						break;
+					}
+				}
+			}
+
+			// Print out message
+			printf("%s\n", binary_to_string(msg));
+			break;
+		}
+	}	
 	unmap_file(handle); 
 	// End TODO
 
