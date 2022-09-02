@@ -25,6 +25,12 @@ CYCLES measure_one_block_access_time(ADDR_PTR addr) {
   return cycles;
 }
 
+extern inline __attribute__((always_inline))
+CYCLES cc_sync() {
+    while((rdtscp() & CHANNEL_SYNC_TIMEMASK) > CHANNEL_SYNC_JITTER) {}
+    return rdtscp();
+}
+
 /*
  * Returns Time Stamp Counter
  */
@@ -164,4 +170,44 @@ char *binary_to_string(char *data) {
 
   msg[msg_len] = '\0';
   return msg;
+}
+
+void send_bit(bool one, map_handle_t *handle)
+{
+	// Synchronize with receiver
+	CYCLES start_t = cc_sync();
+	if (one) {
+		// Repeatedly flush addr
+		ADDR_PTR addr = handle->mapping;
+		while ((rdtscp() - start_t) < CHANNEL_DEFAULT_INTERVAL) {
+			clflush(addr);
+		}	
+
+	} else {
+		// Do Nothing
+		while (rdtscp() - start_t < CHANNEL_DEFAULT_INTERVAL);
+	}
+}
+
+
+bool detect_bit(map_handle_t *handle)
+{
+	int misses = 0;
+	int hits = 0;
+
+	// Sync with sender
+	CYCLES start_t = cc_sync();
+	while ((rdtscp() - start_t) < CHANNEL_DEFAULT_INTERVAL) {
+		// Load data from handle->mapping and measure latency
+		CYCLES access_time = measure_one_block_access_time(handle->mapping); 
+
+		// Count if it's a miss or hit depending on latency
+		if (access_time > CACHE_MISS_LATENCY) {
+			misses++;
+		} else {
+			hits++;
+		}
+	}
+
+	return misses >= hits;
 }
