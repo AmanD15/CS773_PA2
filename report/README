@@ -1,1 +1,7 @@
-# Write your acknowledgement here..
+
+Used the following sources to get an implementation source code, which were then modified in accordance with the requirements of the assignment
+	https://github.com/yshalabi/covert-channel-tutorial
+	https://github.com/moehajj/Flush-Reload/
+
+Used the following source to get a long text which was used to verify the recovery obtained using the synchronisation protocol
+	https://en.wikipedia.org/wiki/Side-channel\_attack

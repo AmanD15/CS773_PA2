@@ -64,9 +64,9 @@ int main(int argc, char **argv) {
 	// To get accuracy, writing to file and using python script
 	/*
 	FILE* file_ptr;
-	file_ptr = fopen("accuracy.txt", "a");
+	file_ptr = fopen("accuracy_r.txt", "w");
 	if (file_ptr == NULL) {
-		printf("Could not open %s\n","accuracy.txt");
+		printf("Could not open %s\n","accuracy_r.txt");
 		exit(0);
 	}
 	fprintf(file_ptr,"%s\n",msg);

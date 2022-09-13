@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 	map_handle_t *handle;	 // declaring a handle for file mapping
 	char *map;
 
-	map = (char *) map_file("map_tmp.txt", &handle);  // mapping a file in memory (virtual address space)
+	map = (char *) map_file("share_mem.txt", &handle);  // mapping a file in memory (virtual address space)
 	
 	// End TODO
 
@@ -31,9 +31,9 @@ int main(int argc, char **argv) {
 	*/
 	
 	// Open file
-	FILE* file_ptr;
-	file_ptr = fopen(filename, "r");
-	if (file_ptr == NULL) {
+	FILE* fptr;
+	fptr = fopen(filename, "r");
+	if (fptr == NULL) {
 		printf("Could not open %s\n",filename);
 		exit(0);
 	}
@@ -65,12 +65,13 @@ int main(int argc, char **argv) {
 	// Read file contents - done to prevent lot of file IO during transmit
 	int i = 0;
 	
-	fseek( file_ptr , 0L , SEEK_END);
-    int lSize = ftell( file_ptr );
-    rewind( file_ptr );
+	// Get length of file to create buffer
+	fseek( fptr , 0L , SEEK_END);
+    int lSize = ftell( fptr );
+    rewind( fptr );
 	char ch[lSize+1], read_char;
     
-	while ((read_char = fgetc(file_ptr)) != EOF)
+	while ((read_char = fgetc(fptr)) != EOF)
 	{
 		ch[i] = read_char;
 		i++;file_size++;
@@ -80,13 +81,14 @@ int main(int argc, char **argv) {
 	// Wait for receiver to be ready
 	io_sync();
 
-
 	// Send the file contents
 	binary = string_to_binary(ch);
 	bin_len = strlen(binary);
-	t_send = clock();
 	int ind = 0;
 	bool done = false;
+	
+	// Start timer
+	t_send = clock();
 	while (!done){
 		for (int i = 0; i < 8; i++) {
 			send_bit(sequence[i], handle);
@@ -103,6 +105,8 @@ int main(int argc, char **argv) {
 			ind++;
 			if (ind == bin_len) {done = true;break;}
 		}
+		
+		// Send zeros when done
 		if (done)
 		{for (int i = 0; i < 32; i++) {
 			send_bit(false, handle);
@@ -112,7 +116,7 @@ int main(int argc, char **argv) {
 	}
 	// Ensure channel is closed by sending extra zeros
 	// Wait for receiver to be ready
-		io_sync();
+	io_sync();
 	for (int i = 0; i < 8; i++) {
 			send_bit(sequence[i], handle);
 	}
@@ -120,10 +124,22 @@ int main(int argc, char **argv) {
 			send_bit(false, handle);
 	}
 	
-	printf("%s\n",binary);		
+	// Print file data to stdout
+	printf("%s\n",ch);
+	
+	// To get accuracy, writing to file and using python script
+	FILE* file_ptr;
+	file_ptr = fopen("accuracy_s.txt", "w");
+	if (file_ptr == NULL) {
+		printf("Could not open %s\n","accuracy_s.txt");
+		exit(0);
+	}
+	fprintf(file_ptr,"%s\n",binary);
+	fclose(file_ptr);
+	
 	// Unmap handle and close file pointer
 	unmap_file(handle);
-	fclose(file_ptr);
+	fclose(fptr);
 	
 	// End TODO
 	

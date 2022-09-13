@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 	map_handle_t *handle;	 // declaring a handle for file mapping
 	char *map;
 
-	map = (char *) map_file("map_tmp.txt", &handle);  // mapping a file in memory (virtual address space)
+	map = (char *) map_file("share_mem.txt", &handle);  // mapping a file in memory (virtual address space)
 
   
 	// End TODO
@@ -76,6 +76,15 @@ int main(int argc, char **argv) {
 	 * store the length of the file content in content_length variable
 	*/
 	
+	// To get accuracy, writing to file and using python script
+	FILE* file_ptr;
+	file_ptr = fopen("accuracy_r.txt", "w");
+	if (file_ptr == NULL) {
+		printf("Could not open %s\n","accuracy_r.txt");
+		exit(0);
+	}
+
+	
 	char msg[MAX_BUFFER_LEN];
 	bitSequence = 0;
 	int i = 0, j = 0;
@@ -111,6 +120,7 @@ int main(int argc, char **argv) {
 			// Print out message and write to file
 			msg[i+1] = '\0';
 			printf("%s", binary_to_string(msg));
+			fprintf(file_ptr,"%s",msg);
 			fprintf(fptr,"%s",binary_to_string(msg));
 			
 			// If exit sequence received, then exit. Else, wait for next set of bits after synchronisation
@@ -119,6 +129,7 @@ int main(int argc, char **argv) {
 	}
 
 	unmap_file(handle); 
+	fclose(file_ptr);
 	fclose(fptr);
 
 	// End TODO

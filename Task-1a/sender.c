@@ -29,9 +29,9 @@ int main(int argc, char **argv) {
 	// To get accuracy, writing to file and using python script
 	/*
 	FILE* file_ptr;
-	file_ptr = fopen("accuracy.txt", "w");
+	file_ptr = fopen("accuracy_s.txt", "w");
 	if (file_ptr == NULL) {
-		printf("Could not open %s\n","accuracy.txt");
+		printf("Could not open %s\n","accuracy_s.txt");
 		exit(0);
 	}
 	fprintf(file_ptr,"%s\n",binary);
