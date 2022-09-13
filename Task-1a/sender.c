@@ -38,12 +38,15 @@ int main(int argc, char **argv) {
 	fclose(file_ptr);
 	*/
 	
+	// Send test sequence to tell receiver that transmission started
 	unsigned int bin_len = strlen(binary);
 	bool sequence[8] = {1,0,1,0,1,0,1,1};
 	for (int i = 0; i < 8; i++) {
 			send_bit(sequence[i], handle);
 		}
+	// Start timer for measurement
 	t_send = clock();
+	// Send data across covert channel
 	for (int ind = 0; ind < bin_len; ind++) {
 			if (binary[ind] == '0') {
 				send_bit(false, handle);
@@ -51,6 +54,7 @@ int main(int argc, char **argv) {
 				send_bit(true, handle);
 			}
 		}
+	// Stop timer
 	t_send = clock() - t_send;
 
 	unmap_file(handle); 

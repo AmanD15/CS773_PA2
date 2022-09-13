@@ -24,9 +24,11 @@
 // Changes
 #define CHANNEL_DEFAULT_INTERVAL        0x00008000
 #define CHANNEL_SYNC_TIMEMASK           0x000FFFFF
-#define CHANNEL_SYNC_JITTER             0x0100
-#define CACHE_MISS_LATENCY 111
+#define GLOBAL_SYNC_TIMEMASK            0x0FFFFFFF
+#define CHANNEL_SYNC_JITTER             0x0800
+#define CACHE_MISS_LATENCY 100
 CYCLES cc_sync();
+CYCLES io_sync();
 //End changes
 typedef struct map_handle_s {
   int fd;

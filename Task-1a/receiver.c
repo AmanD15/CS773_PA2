@@ -21,16 +21,26 @@ int main(int argc, char **argv) {
 
 
 	// TODO: synchronize with sender and receive data in msg buffer.
+	
+	// Expected sequence for initialisation
 	uint32_t sequenceMask = ((uint32_t) 1<<6) - 1;
 	uint32_t expSequence = 0b101011;
 	uint32_t bitSequence = 0;
+	
+	// Loop till the above sequence is seen, only 6 out of 8 Tx bits used
 	while (1)
 	{
 		bool bitReceived = detect_bit(handle);
 		bitSequence = ((uint32_t) bitSequence<<1) | bitReceived;
+		
+		// If received the sequence
 		if ((bitSequence & sequenceMask) == expSequence) {
+		
+			// To keep count of all 0s 
 			int strike_zeros = 0;
 			t_recv = clock();
+			
+			// Detection algorithm - loop over max_length till a sequence of 8 zeros seen
 			for (int i = 0; i < MAX_BUFFER_LEN; i++) {
 				if (detect_bit(handle)) {
 					msg[i] = '1';

@@ -31,6 +31,12 @@ CYCLES cc_sync() {
     return rdtscp();
 }
 
+extern inline __attribute__((always_inline))
+CYCLES io_sync() {
+    while((rdtscp() & GLOBAL_SYNC_TIMEMASK) > CHANNEL_SYNC_JITTER) {}
+    return rdtscp();
+}
+
 /*
  * Returns Time Stamp Counter
  */
