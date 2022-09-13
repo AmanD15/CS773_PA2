@@ -34,7 +34,10 @@ int main(int argc, char **argv) {
 		bool bitReceived = detect_bit(handle);
 		bitSequence = ((uint32_t) bitSequence<<1) | bitReceived;
 		if ((bitSequence & sequenceMask) == expSequence) {
+			// To keep count of all 0s 
 			int strike_zeros = 0;
+
+			// Detection algorithm - loop over max_length till a sequence of 8 zeros seen
 			for (int i = 0; i < MAX_BUFFER_LEN; i++) {
 				bool det = detect_bit(handle);
 				if (det) {
@@ -47,7 +50,7 @@ int main(int argc, char **argv) {
 					}
 				}
 			}
-
+			
 			// Print out message
 			file_n = binary_to_string(filename);
 			break;
@@ -66,47 +69,57 @@ int main(int argc, char **argv) {
 		exit(0);
 	}
 	// End TODO
-	t_recv = clock();
 
 	/* TODO:
 	 * Receive file contents from the sender process over covert channel
 	 * Wrtie them into the file opened earlier
 	 * store the length of the file content in content_length variable
 	*/
-	char* msg;
-	bool set_bit = false;
+	
+	char msg[MAX_BUFFER_LEN];
 	bitSequence = 0;
-	msg[8] = '\0';
+	int i = 0, j = 0;
+	bool break_val = false;
+	t_recv = clock();
 	while (1)
 	{
-		if (set_bit == false){
-			bool bitReceived = detect_bit(handle);
-			bitSequence = ((uint32_t) bitSequence<<1) | bitReceived;
-			if ((bitSequence & sequenceMask) == expSequence) {
-				set_bit = true;
-			}
-		}
-		else
-		{
-			bool current_char = 0;
-			for (int i = 0; i < 8; i++) {
-				bool rec = detect_bit(handle);
-				current_char = (current_char | rec);
-				if (rec) {
+		bool bitReceived = detect_bit(handle);
+		bitSequence = ((uint32_t) bitSequence<<1) | bitReceived;
+		
+		// If received the sequence
+		if ((bitSequence & sequenceMask) == expSequence) {
+		
+			// To keep count of all 0s 
+			int strike_zeros = 0;
+			
+			// Detection algorithm - loop over max_length till a sequence of 8 zeros seen
+			for (i = 0; i < MAX_BUFFER_LEN/8; i++) {
+				if ((i & 7) == 7) content_length++;
+				if (detect_bit(handle)) {
 					msg[i] = '1';
-				}
-				else {
+					strike_zeros = 0;
+				} else {
 					msg[i] = '0';
+					// Set break_val if 0s seen
+					if (++strike_zeros >= 16 && i % 8 == 0) {
+						break_val = true;
+						break;
+					}
 				}
 			}
-			if (current_char == false) break;
-			content_length++;
+
+			// Print out message and write to file
+			msg[i+1] = '\0';
+			printf("%s", binary_to_string(msg));
 			fprintf(fptr,"%s",binary_to_string(msg));
+			
+			// If exit sequence received, then exit. Else, wait for next set of bits after synchronisation
+			if (break_val) break;
 		}
 	}
 
 	unmap_file(handle); 
-	fclose(file_ptr);
+	fclose(fptr);
 
 	// End TODO
 

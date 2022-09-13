@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
 	
 	// End TODO
 
+	// Get filename as input
 	printf("File to be send: ");
 	fgets (filename, 50, stdin);
 	if ((p = strchr(filename,'\n')) != NULL) *p = '\0';
@@ -28,12 +29,16 @@ int main(int argc, char **argv) {
 	 * Open text file in read mode.
 	 * Store the size of file in file_size variable.
 	*/
+	
+	// Open file
 	FILE* file_ptr;
 	file_ptr = fopen(filename, "r");
 	if (file_ptr == NULL) {
 		printf("Could not open %s\n",filename);
 		exit(0);
 	}
+	
+	// Send the filename using same method as Task 1a
 	char *binary;
 	binary = string_to_binary(filename);
 	unsigned int bin_len = strlen(binary);
@@ -48,34 +53,77 @@ int main(int argc, char **argv) {
 				send_bit(true, handle);
 			}
 	}
-	// Ensure channel is closed
+	// Ensure channel is closed by sending extra zeros
 	for (int i = 0; i < 16; i++) {
 			send_bit(false, handle);
 	}
 	// End TODO
 	
-	t_send = clock();
 
 	// TODO: Transmit file contents to the Receiver over the cache covert channel
 	
-	for (int i = 0; i < 8; i++) {
-		send_bit(sequence[i], handle);
+	// Read file contents - done to prevent lot of file IO during transmit
+	int i = 0;
+	
+	fseek( file_ptr , 0L , SEEK_END);
+    int lSize = ftell( file_ptr );
+    rewind( file_ptr );
+	char ch[lSize+1], read_char;
+    
+	while ((read_char = fgetc(file_ptr)) != EOF)
+	{
+		ch[i] = read_char;
+		i++;file_size++;
 	}
-	char ch[2];
-	while ((ch[0] = fgetc(file_ptr)) != EOF){
-		binary = string_to_binary(ch);
-		file_size++;
-		for (int ind = 0; ind < 8; ind++) {
-				if (binary[ind] == '0') {
-					send_bit(false, handle);
-				} else {
-					send_bit(true, handle);
-				}
+	ch[i] = '\0';
+
+	// Wait for receiver to be ready
+	io_sync();
+
+
+	// Send the file contents
+	binary = string_to_binary(ch);
+	bin_len = strlen(binary);
+	t_send = clock();
+	int ind = 0;
+	bool done = false;
+	while (!done){
+		for (int i = 0; i < 8; i++) {
+			send_bit(sequence[i], handle);
+		}
+		for (int j = 0; j < MAX_BUFFER_LEN/8; j++) {
+
+			// Send the test sequence
+			// Send data
+			if (binary[ind] == '0') {
+				send_bit(false, handle);
+			} else {
+				send_bit(true, handle);
 			}
+			ind++;
+			if (ind == bin_len) {done = true;break;}
+		}
+		if (done)
+		{for (int i = 0; i < 32; i++) {
+			send_bit(false, handle);
+		}}
+		// Wait for receiver to be ready
+		io_sync();
 	}
-	file_size--;
-		
+	// Ensure channel is closed by sending extra zeros
+	// Wait for receiver to be ready
+		io_sync();
+	for (int i = 0; i < 8; i++) {
+			send_bit(sequence[i], handle);
+	}
+	for (int i = 0; i < 32; i++) {
+			send_bit(false, handle);
+	}
+	
+	printf("%s\n",binary);		
+	// Unmap handle and close file pointer
 	unmap_file(handle);
+	fclose(file_ptr);
 	
 	// End TODO
 	
