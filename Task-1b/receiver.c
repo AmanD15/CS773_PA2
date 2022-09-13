@@ -106,6 +106,7 @@ int main(int argc, char **argv) {
 	}
 
 	unmap_file(handle); 
+	fclose(file_ptr);
 
 	// End TODO
 

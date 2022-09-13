@@ -14,12 +14,11 @@ int main(int argc, char **argv) {
 	map_handle_t *handle;	 // declaring a handle for file mapping
 	char *map;
 
-	map = (char *) map_file("map_tmp.txt", &handle);  // mapping a file in memory (virtual address space)
+	map = (char *) map_file("share_mem.txt", &handle);  // mapping a file in memory (virtual address space)
 
   
 	// End TODO
 
-	t_recv = clock();
 
 	// TODO: synchronize with sender and receive data in msg buffer.
 	uint32_t sequenceMask = ((uint32_t) 1<<6) - 1;
@@ -31,6 +30,7 @@ int main(int argc, char **argv) {
 		bitSequence = ((uint32_t) bitSequence<<1) | bitReceived;
 		if ((bitSequence & sequenceMask) == expSequence) {
 			int strike_zeros = 0;
+			t_recv = clock();
 			for (int i = 0; i < MAX_BUFFER_LEN; i++) {
 				if (detect_bit(handle)) {
 					msg[i] = '1';
@@ -48,12 +48,24 @@ int main(int argc, char **argv) {
 			break;
 		}
 	}	
-	unmap_file(handle); 
+	unmap_file(handle);
 	// End TODO
+
+	// To get accuracy, writing to file and using python script
+	/*
+	FILE* file_ptr;
+	file_ptr = fopen("accuracy.txt", "a");
+	if (file_ptr == NULL) {
+		printf("Could not open %s\n","accuracy.txt");
+		exit(0);
+	}
+	fprintf(file_ptr,"%s\n",msg);
+	fclose(file_ptr);
+	*/
 
 
 	t_recv = clock() - t_recv;
-	msg_len = strlen(msg);
+	msg_len = strlen(msg)/8;
 	recv_time = ((double) t_recv) / CLOCKS_PER_SEC;
 	recv_rate = (double) (msg_len * 8) / recv_time;
 

@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
 	map_handle_t *handle;	 // declaring a handle for file mapping
 	char *map;
 
-	map = (char *) map_file("map_tmp.txt", &handle);  // mapping a file in memory (virtual address space)
+	map = (char *) map_file("share_mem.txt", &handle);  // mapping a file in memory (virtual address space)
   
 	// End TODO
 
@@ -21,16 +21,29 @@ int main(int argc, char **argv) {
 	fgets (msg, 50, stdin);
 	msg_len = strlen(msg);
 
-	t_send = clock();
 
 	// TODO: Transmit message over the cache covert channel
 	char *binary;
 	binary = string_to_binary(msg);
+	
+	// To get accuracy, writing to file and using python script
+	/*
+	FILE* file_ptr;
+	file_ptr = fopen("accuracy.txt", "w");
+	if (file_ptr == NULL) {
+		printf("Could not open %s\n","accuracy.txt");
+		exit(0);
+	}
+	fprintf(file_ptr,"%s\n",binary);
+	fclose(file_ptr);
+	*/
+	
 	unsigned int bin_len = strlen(binary);
 	bool sequence[8] = {1,0,1,0,1,0,1,1};
 	for (int i = 0; i < 8; i++) {
 			send_bit(sequence[i], handle);
 		}
+	t_send = clock();
 	for (int ind = 0; ind < bin_len; ind++) {
 			if (binary[ind] == '0') {
 				send_bit(false, handle);
@@ -38,12 +51,12 @@ int main(int argc, char **argv) {
 				send_bit(true, handle);
 			}
 		}
+	t_send = clock() - t_send;
 
 	unmap_file(handle); 
 	// End TODO
 
 
-	t_send = clock() - t_send;
 	trans_time = ((double) t_send) / CLOCKS_PER_SEC;
 	trans_rate = (double) (msg_len * 8) / trans_time;
 
